@@ -68,9 +68,19 @@
 
 import os
 import math
-
+def foo_gen():
+    n = 0
+    while True:
+        n+=1
+        yield n%2
+        
 def center_check(board):
     n = 4
+    with open('step.txt','r') as f:
+        x = x = [int(k) for k in f.read().split(' ')]
+        step = x[0]
+        scenario = x[1]
+        
     strings = ['UP','RIGHT','DOWN','LEFT']
     pattern = ''.join([''.join(b) for b in board])
     base_pattern = pattern.replace('e','#').replace('b','-')
@@ -81,16 +91,53 @@ def center_check(board):
               ['###------',1],
               ['#--#--#--',0],
               ['####--#--',1],
-              ['#--#--###',0]]
+              ['#--#--###',1],
+              ['------###',1]]
     
-    centers = [board[0][1], board[1][2], board[2][1], board[1][0]]
-    for i in range(n):
-        if centers[i] in ['e']:
-            return strings[i]
-    for p,q in pcases:
-        if p==base_pattern:
-            return strings[q]
-    return pattern
+    if step == 0:
+        if base_pattern =='###--#--#':
+            t = strings[3]
+            scenario = 0
+        elif base_pattern =='####--#--':
+            t= strings[2]
+            scenario = 0
+        elif base_pattern =='#--#--###':
+            t = strings[1]
+            scenario = 0
+        elif base_pattern =='--#--####':
+            t = strings[0]
+            scenario = 0
+        elif base_pattern =='------###':
+            t = strings[0]
+            scenario = 1
+        elif base_pattern =='###------':
+            t = strings[2]
+            scenario = 1
+        elif base_pattern =='--#--#--#':
+            t = strings[3]
+            scenario = 1
+        elif base_pattern =='#--#--#--':
+            t = strings[1]
+            scenario = 1
+        with open('step.txt','w') as f:
+            f.write(str(step+1)+' '+str(scenario))
+        return t
+    elif scenario==0:
+        steps = [3,0,0,1,0,0,0]
+        with open('step.txt','w') as f:
+            if step==7:
+                f.write('0 0')
+            else:
+                f.write(str(step+1)+' '+str(scenario))
+        return strings[steps[step-1]]
+    else:
+        steps = [3,0,1,0,0,0]
+        with open('step.txt','w') as f:
+            if step==6:
+                f.write('0 0')
+            else:
+                f.write(str(step+1)+' '+str(scenario))
+        return strings[steps[step-1]]
     
 # Set next action the bot
 def next_move(player, board):
@@ -100,6 +147,9 @@ def next_move(player, board):
 # Start application
 if __name__ == "__main__":
     # Set data
+    if not os.path.isfile('step.txt'):
+        with open('step.txt','w') as f:
+            f.write('0 0')
     player = int(input())
     board = [[j for j in input().strip()] for i in range(3)]  
     next_move(player, board)
