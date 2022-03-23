@@ -31,7 +31,7 @@ def getTotalX(a, b):
     # Write your code here
     K = find_gcd(b)
     cands = []
-    for j in range(2,K+1):
+    for j in range(1,K+1):
         if sum([j%i for i in a])==0:
             cands.append(j)
     result = []
